@@ -9,10 +9,13 @@ var swig = require('swig');
 //加载数据库模块
 var mongoose = require('mongoose');
 //加载body-parser,用来处理post提交过来的数据
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+//加载cookies模块,用来记录登录信息
+var Cookies = require('cookies');
 //创建app应用  等同 NodeJS 中的服务端对象 Http.createServe();
 var app = express();
-
+//引入当前的用户模型 判断当前等陆用户的类型
+var User = require('./models/User');
 //设置静态文件托管
 //当用户访问的url以/public开始, 那么直接返回对应的__dirname + '/public' 下的文件
 app.use('/public', express.static(__dirname + '/public'));
@@ -30,6 +33,30 @@ swig.setDefaults({cache: false});
 
 //bodyParser设置  app调用bodyParser下的urlencoded方法 会在req对象上增加个body属性获取到前端提交过来的数据
 app.use(bodyParser.urlencoded({extended: true}));
+
+//通过中间件设置cookie  只要用户访问站点 都会运行这个中间继
+app.use(function(req, res, next) {
+    req.cookies = new Cookies(req, res);
+
+    //解析用户登录的cookie信息
+    req.userInfo = {};
+    if(req.cookies.get("userInfo")) {
+        try {
+            req.userInfo = JSON.parse(req.cookies.get('userInfo'));
+            //获取当前登录用户的类型,是否是管理员
+            User.findById(req.userInfo._id).then(function(userInfo) {
+                req.userInfo.isAdmin = Boolean(userInfo.isAdmin);
+                next();
+            })
+        } catch(e){
+            next();
+        }
+
+    } else {
+        //console.log( req.cookies.get("userInfo"));
+        next();
+    }
+});
 //路由绑定
 // /**
 //  * 首页

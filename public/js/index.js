@@ -1,7 +1,7 @@
 $(function() {
     var $loginBox = $('#loginBox');
     var $registerBox = $('#registerBox');
-
+    var $userInfo = $('#userInfo');
     //切换到注册面板
     $loginBox.find('a.colMint').on('click', function() {
         $registerBox.show();
@@ -25,11 +25,61 @@ $(function() {
                 repassword: $registerBox.find('[name="repassword"]').val()
             },
             dataType: 'json',
-            sucess: function(result) {
-                console.log(result);
+            success: function(result) {
+                //console.log(result);
+                $registerBox.find('.colWarning').html(result.message);
+                if(!result.code) {
+                    //注册成功
+                    setTimeout(function(){
+                        $registerBox.hide();
+                        $loginBox.show();
+                    },1000)
+                }
             }
         });
     })
 
+    //登录
+    $loginBox.find('button').on('click', function(){
+        $.ajax({
+            type: 'post',
+            url: '/api/user/login',
+            data: {
+                username: $loginBox.find('[name="username"]').val(),
+                password: $loginBox.find('[name="password"]').val()
+            },
+            dataType: 'json',
+            success: function(result){
+                $loginBox.find('.colWarning').html(result.message);
+                if(!result.code) {
+                    //登录成功
+                    setTimeout(function(){
+                        window.location.reload();
+                    },500)
 
+
+                    // setTimeout(function(){
+                    //     $loginBox.hide();
+                    //     $userInfo.show();
+                    //
+                    //     //显示用户登录信息
+                    //     $userInfo.find('.username').html(result.userInfo.username);
+                    //     $userInfo.find('.info').html('欢迎光临我的博客!');
+                    // },1000);
+                }
+        }
+        })
+    });
+
+    // 退出
+    $('#logout').on('click', function() {
+        $.ajax({
+            url:'/api/user/logout',
+            success: function(result){
+                if(!result.code){
+                    window.location.reload();
+                }
+            }
+        })
+    })
 })

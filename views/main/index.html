@@ -77,23 +77,31 @@
             </div>
         </div>
         <div class="mainRight">
-                <!--<div class="rightBox">-->
-                    <!--<div class="title"><span>用户信息</span></div>-->
-                    <!--<p><span colDark>admin</span>-->
-                    <!--<p><span class="colDark">你好,你是管理员,<a href="/admin">你可以点击这里进入管理</a></span></p>-->
-                    <!--<p><span class="colDark"><a href="/logout" id="logoutBtn">退出</a></span></p>-->
-                <!--</div>-->
 
-                <div class="rightBox" id="loginBox" style="display: none">
+                {% if userInfo._id %}
+                <div class="rightBox" id="userInfo" >
+                    <div class="title"><span>用户信息</span></div>
+                    <p><span class="colDanger username" >{{userInfo.username}}</span>
+
+                    {% if userInfo.isAdmin %}
+                    <p><span class="colDark info">你好,你是管理员,<a href="/admin" target="_blank">点击进入后台管理</a></span></p>
+                    {% else %}
+                    <p><span class="colDark info">你好,欢迎光临我的博客</span></p>
+                    {% endif %}
+
+                    <p><span class="colDark "><a href="javascript:;" id="logout">退出</a></span></p>
+                </div>
+                {% else %}
+                <div class="rightBox" id="loginBox" >
                     <div class="title"><span>登录</span></div>
-                    <div class="line"><span class="colDark">用户名:</span><input type="text"><em></em></div>
-                    <div class="line"><span class="colDark">密码:</span><input type="password"><em></em></div>
+                    <div class="line"><span class="colDark">用户名:</span><input type="text" name="username"><em></em></div>
+                    <div class="line"><span class="colDark">密码:</span><input type="password" name="password"><em></em></div>
                     <div class="line"><span class="colDark"></span><button>登录</button></div>
                     <p class="textRight">还没注册?<a href="javascript:;" class="colMint">马上注册</a></p>
                     <p class="colWarning textCenter"></p>
                 </div>
 
-                <div class="rightBox" id="registerBox" >
+                <div class="rightBox" id="registerBox" style="display: none" >
                     <div class="title"><span>注册</span></div>
                     <div class="line"><span class="colDark">用户名:</span><input type="text" name="username"><em></em></div>
                     <div class="line"><span class="colDark">密码:</span><input type="password" name="password"><em></em></div>
@@ -102,7 +110,7 @@
                     <p class="textRight">已有账号?<a href="javascript:;" class="colMint">马上登录</a></p>
                     <p class="colWarning textCenter"></p>
                 </div>
-
+                {%endif%}
                 <div class="rightBox">
                     <div class="title"><span>社区</span></div>
                     <p><a href="http://localhost:8080/" target="_blank" class="colDanger">博客</a></p>
