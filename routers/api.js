@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 //返回的为models下的 User 构造函数
 var User = require('../models/User');
+var Content = require('../models/Content');
 
 //统一返回格式
 var responseData;
@@ -126,4 +127,31 @@ router.get('/user/logout', function(req, res) {
     responseData.message = '退出成功'
     res.json(responseData);
 })
+
+/*
+*评论提交
+* */
+router.post('/comment/post',function(req, res){
+    //内容的id
+    var contentId = req.body.contentid ||'';
+    var postData = {
+        username: req.userInfo.username,
+        postTime: new Date(),
+        content: req.body.content
+    };
+    //查询当前这篇文章的信息
+    Content.findOne({
+        _id: contentId
+    }).then(function(content) {
+        console.log(postData);
+        content.comments.push(postData);
+        return content.save();
+    }).then(function(newContent){
+        responseData.message = '评论成功';
+        responseData.data = newContent;
+        res.json(responseData);
+    })
+});
+
+
 module.exports = router;
