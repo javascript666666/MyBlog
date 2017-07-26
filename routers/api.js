@@ -126,6 +126,20 @@ router.get('/user/logout', function(req, res) {
     req.cookies.set('userInfo', null);
     responseData.message = '退出成功'
     res.json(responseData);
+});
+
+/*
+* 获取指定文章的所有Api
+* */
+
+router.get('/comment',function(req, res) {
+    var contentId = req.query.contentid || '';
+    Content.findOne({
+        _id: contentId
+    }).then(function(content) {
+        responseData.data = content.comments;
+        res.json(responseData);
+    })
 })
 
 /*
@@ -144,7 +158,9 @@ router.post('/comment/post',function(req, res){
         _id: contentId
     }).then(function(content) {
         console.log(postData);
-        content.comments.push(postData);
+        if (postData.content != '') {
+            content.comments.push(postData);
+        }
         return content.save();
     }).then(function(newContent){
         responseData.message = '评论成功';
